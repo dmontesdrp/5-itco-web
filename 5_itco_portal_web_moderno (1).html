@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5-ITCO - Integral Technology Consulting</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#030B1E',
+                        darkCard: '#081738',
+                        cyanAccent: '#00F0FF',
+                        cyanHover: '#00B8CC',
+                        grayText: '#94A3B8'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #030B1E;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism styling for logo and containers */
+        .glass-card {
+            background: rgba(8, 23, 56, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.18);
+        }
+
+        .glass-card-hover:hover {
+            border-color: rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+            transform: translateY(-3px);
+            transition: all 0.3s ease;
+        }
+
+        /* Clean blend for Logo image on dark backgrounds */
+        .logo-container {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #00F0FF;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            border-radius: 12px;
+            padding: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-img {
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        /* Glow animation for CTA */
+        .cyan-glow {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+        .cyan-glow:hover {
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030B1E;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #081738;
+            border-radius: 4px;
+            border: 1px solid rgba(0,240,255,0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00F0FF;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col justify-between">
+
+    <!-- Interactive Background Canvas -->
+    <canvas id="particleCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <div class="relative z-10 flex-1 flex flex-col">
+        <!-- NAVIGATION BAR -->
+        <header class="sticky top-0 z-50 glass-card border-b border-cyanAccent/20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <!-- Brand / Logo -->
+                    <a href="#" class="flex items-center gap-3 group">
+                        <div class="logo-container h-12 w-12 transition-transform duration-300 group-hover:scale-105">
+                            <img src="Logo02_2.jpg" alt="5-ITCO Logo" class="logo-img h-full w-full" onerror="this.src='https://placehold.co/100x100/081738/00F0FF?text=5-ITCO'">
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-extrabold tracking-wider text-white flex items-center gap-1">
+                                5-ITCO
+                                <span class="h-2 w-2 rounded-full bg-cyanAccent animate-pulse"></span>
+                            </span>
+                            <span class="text-[10px] text-cyanAccent tracking-widest uppercase font-semibold">Integral Tech Consulting</span>
+                        </div>
+                    </a>
+
+                    <!-- Desktop Navigation Links -->
+                    <nav class="hidden md:flex items-center space-x-8">
+                        <a href="#inicio" class="text-sm font-medium text-gray-300 hover:text-cyanAccent transition-colors duration-200">Inicio</a>
+                        <a href="#filosofia" class="text-sm font-medium text-gray-300 hover:text-cyanAccent transition-colors duration-200">Misión / Visión</a>
+                        <a href="#servicios" class="text-sm font-medium text-gray-300 hover:text-cyanAccent transition-colors duration-200">Servicios</a>
+                        <a href="#contacto" class="px-5 py-2.5 rounded-lg bg-cyanAccent text-darkBg font-bold text-sm cyan-glow hover:bg-cyanHover transition-all duration-300">
+                            Contacto
+                        </a>
+                    </nav>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden">
+                        <button id="mobileMenuBtn" class="text-gray-300 hover:text-cyanAccent focus:outline-none p-2" aria-label="Abrir Menú">
+                            <i class="fa-solid fa-bars text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobileMenu" class="hidden md:hidden glass-card border-t border-cyanAccent/20 px-4 pt-3 pb-6 space-y-3">
+                <a href="#inicio" class="mobile-link block py-2 text-base font-medium text-gray-300 hover:text-cyanAccent">Inicio</a>
+                <a href="#filosofia" class="mobile-link block py-2 text-base font-medium text-gray-300 hover:text-cyanAccent">Misión / Visión</a>
+                <a href="#servicios" class="mobile-link block py-2 text-base font-medium text-gray-300 hover:text-cyanAccent">Servicios</a>
+                <a href="#contacto" class="mobile-link block w-full text-center py-3 rounded-lg bg-cyanAccent text-darkBg font-bold text-base cyan-glow">
+                    Contacto Directo
+                </a>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section id="inicio" class="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Column Text -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card border-cyanAccent/40 text-cyanAccent text-xs font-semibold uppercase tracking-wider">
+                        <i class="fa-solid fa-shield-halved"></i> Soluciones Tecnológicas Integrales
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                        Conectando ideas, <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyanAccent via-blue-400 to-indigo-400">
+                            impulsando el futuro
+                        </span> <br>
+                        tecnológico de tu empresa
+                    </h1>
+                    
+                    <p class="text-base sm:text-lg text-grayText max-w-2xl mx-auto lg:mx-0">
+                        En <strong class="text-white">5-ITCO</strong> simplificamos la tecnología. Ofrecemos mantenimiento de infraestructura, servidores corporativos, soporte técnico especializado y servicios web modernos adaptados a tus objetivos de negocio.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                        <a href="#servicios" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-cyanAccent text-darkBg font-bold text-base cyan-glow hover:bg-cyanHover transition-all flex items-center justify-center gap-2">
+                            <span>Explorar Servicios</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <a href="#contacto" class="w-full sm:w-auto px-8 py-4 rounded-xl glass-card text-white font-semibold text-base hover:bg-cyanAccent/10 border-cyanAccent/30 hover:border-cyanAccent transition-all text-center">
+                            Solicitar Consultoría
+                        </a>
+                    </div>
+
+                    <!-- Key Metrics / Badges -->
+                    <div class="grid grid-cols-3 gap-4 pt-8 border-t border-cyanAccent/10">
+                        <div>
+                            <p class="text-2xl sm:text-3xl font-extrabold text-cyanAccent">100%</p>
+                            <p class="text-xs text-grayText uppercase tracking-wider">Garantía IT</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl sm:text-3xl font-extrabold text-white">24/7</p>
+                            <p class="text-xs text-grayText uppercase tracking-wider">Soporte Continuo</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl sm:text-3xl font-extrabold text-cyanAccent">4-en-1</p>
+                            <p class="text-xs text-grayText uppercase tracking-wider">Áreas Clave</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column Showcase Card -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-full max-w-md">
+                        <!-- Background Glow Effect -->
+                        <div class="absolute -inset-1 bg-gradient-to-r from-cyanAccent to-blue-600 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
+                        
+                        <div class="relative glass-card rounded-3xl p-8 space-y-6 text-center border-cyanAccent/30">
+                            <!-- Prominent Logo Display -->
+                            <div class="mx-auto w-36 h-36 logo-container rounded-2xl shadow-2xl p-2 bg-white">
+                                <img src="Logo02_2.jpg" alt="5-ITCO Emblem" class="logo-img h-full w-full" onerror="this.src='https://placehold.co/200x200/081738/00F0FF?text=5-ITCO'">
+                            </div>
+
+                            <div>
+                                <h2 class="text-2xl font-bold text-white">5-ITCO Consulting</h2>
+                                <p class="text-xs text-cyanAccent mt-1 font-medium">Integral Technology Consulting</p>
+                            </div>
+
+                            <p class="text-sm text-grayText italic">
+                                "Soporte preventivo, infraestructura robusta e innovación web combinados en un solo socio aliado."
+                            </p>
+
+                            <div class="space-y-3 pt-2 text-left text-sm">
+                                <div class="flex items-center gap-3 text-gray-300">
+                                    <i class="fa-solid fa-check-circle text-cyanAccent"></i>
+                                    <span>Diagnóstico & Help Desk</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-gray-300">
+                                    <i class="fa-solid fa-check-circle text-cyanAccent"></i>
+                                    <span>Servidores & Cuentas Institucionales</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-gray-300">
+                                    <i class="fa-solid fa-check-circle text-cyanAccent"></i>
+                                    <span>Desarrollo Web & Plataformas</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PHILOSOPHY SECTION (Misión / Visión) -->
+        <section id="filosofia" class="py-20 bg-darkBg/80 border-t border-b border-cyanAccent/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                    <span class="text-cyanAccent text-xs font-bold uppercase tracking-widest">Nuestra Esencia</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Filosofía Corporativa</h2>
+                    <p class="text-grayText">Los pilares que fundamentan nuestro compromiso con la excelencia tecnológica de nuestros clientes.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Misión -->
+                    <div class="glass-card glass-card-hover rounded-2xl p-8 relative overflow-hidden group">
+                        <div class="absolute -right-10 -bottom-10 text-cyanAccent/5 text-9xl font-black group-hover:text-cyanAccent/10 transition-colors">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <div class="h-14 w-14 rounded-xl bg-cyanAccent/10 border border-cyanAccent/30 text-cyanAccent flex items-center justify-center text-2xl mb-6">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Nuestra Misión</h3>
+                        <p class="text-grayText leading-relaxed">
+                            Proporcionar soluciones tecnológicas integrales, confiables y eficientes que optimicen los procesos operativos de las empresas. Buscamos ser el departamento tecnológico aliado que garantice la continuidad, seguridad y crecimiento continuo del negocio a través de asesoría y soporte especializado.
+                        </p>
+                    </div>
+
+                    <!-- Visión -->
+                    <div class="glass-card glass-card-hover rounded-2xl p-8 relative overflow-hidden group">
+                        <div class="absolute -right-10 -bottom-10 text-cyanAccent/5 text-9xl font-black group-hover:text-cyanAccent/10 transition-colors">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <div class="h-14 w-14 rounded-xl bg-cyanAccent/10 border border-cyanAccent/30 text-cyanAccent flex items-center justify-center text-2xl mb-6">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Nuestra Visión</h3>
+                        <p class="text-grayText leading-relaxed">
+                            Consolidarnos como la firma consultora de tecnología líder y de mayor confianza en la región, reconocida por nuestra innovación constante, excelencia técnica en soporte de infraestructura, administración de redes y desarrollo de plataformas digitales a medida.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SERVICES SECTION -->
+        <section id="servicios" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+                <span class="text-cyanAccent text-xs font-bold uppercase tracking-widest">Catálogo Especializado</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Servicios Oficiales 5-ITCO</h2>
+                <p class="text-grayText">Selecciona una categoría para explorar nuestros servicios detallados y solicitar asistencia personalizada.</p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
+                <button class="filter-btn active-filter px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300" data-category="all">
+                    Todos los Servicios
+                </button>
+                <button class="filter-btn inactive-filter px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300" data-category="soporte">
+                    <i class="fa-solid fa-headset mr-1.5"></i> Soporte & Help Desk
+                </button>
+                <button class="filter-btn inactive-filter px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300" data-category="mantenimiento">
+                    <i class="fa-solid fa-screwdriver-wrench mr-1.5"></i> Mantenimiento & Equipos
+                </button>
+                <button class="filter-btn inactive-filter px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300" data-category="servidores">
+                    <i class="fa-solid fa-server mr-1.5"></i> Servidores & Identidad
+                </button>
+                <button class="filter-btn inactive-filter px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300" data-category="web">
+                    <i class="fa-solid fa-code mr-1.5"></i> Servicios Web
+                </button>
+            </div>
+
+            <!-- Services Grid -->
+            <div id="servicesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards will be populated or manipulated dynamically -->
+
+                <!-- Card 1: Soporte Técnico Especializado -->
+                <div class="service-card glass-card glass-card-hover rounded-2xl p-6 flex flex-col justify-between" data-category="soporte">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold">Soporte & Help Desk</span>
+                            <i class="fa-solid fa-headset text-2xl text-cyanAccent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Soporte Técnico Especializado</h3>
+                        <p class="text-grayText text-sm mb-4 line-clamp-3">
+                            Atención presencial y remota para la resolución ágil de incidentes en hardware, software, periféricos y conectividad.
+                        </p>
+                    </div>
+                    <button class="open-modal-btn w-full mt-4 py-2.5 rounded-xl bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30 hover:bg-cyanAccent hover:text-darkBg font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                        data-title="Soporte Técnico Especializado"
+                        data-category="Soporte & Help Desk"
+                        data-desc="Brindamos acompañamiento continuo a tus colaboradores para resolver fallas operativas cotidianas de computadoras, redes locales e impresoras. Ofrecemos asistencia remota inmediata y visitas presenciales programadas o por emergencia."
+                        data-features="Asistencia remota inmediata|Atención presencial bajo solicitud|Mantenimiento de conectividad y periféricos|Mesa de ayuda estructurada por tickets">
+                        Ver Detalles <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+
+                <!-- Card 2: Mantenimiento Preventivo y Correctivo -->
+                <div class="service-card glass-card glass-card-hover rounded-2xl p-6 flex flex-col justify-between" data-category="mantenimiento">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold">Mantenimiento</span>
+                            <i class="fa-solid fa-microchip text-2xl text-cyanAccent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Mantenimiento de Equipos</h3>
+                        <p class="text-grayText text-sm mb-4 line-clamp-3">
+                            Servicios preventivos y correctivos para computadoras de escritorio, laptops y servidores para extender su vida útil.
+                        </p>
+                    </div>
+                    <button class="open-modal-btn w-full mt-4 py-2.5 rounded-xl bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30 hover:bg-cyanAccent hover:text-darkBg font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                        data-title="Mantenimiento de Equipos de Cómputo"
+                        data-category="Mantenimiento & Equipos"
+                        data-desc="Optimizamos el rendimiento térmico y de procesamiento de tus sistemas informáticos. Limpieza física interna, cambio de pasta térmica, actualización de componentes y depuración de software malicioso."
+                        data-features="Limpieza física interna profunda|Depuración y optimización de Sistema Operativo|Actualización de discos SSD y memoria RAM|Diagnóstico preventivo de fallas de hardware">
+                        Ver Detalles <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+
+                <!-- Card 3: Servidores Corporativos -->
+                <div class="service-card glass-card glass-card-hover rounded-2xl p-6 flex flex-col justify-between" data-category="servidores">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold">Servidores & Identidad</span>
+                            <i class="fa-solid fa-server text-2xl text-cyanAccent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Administración de Servidores</h3>
+                        <p class="text-grayText text-sm mb-4 line-clamp-3">
+                            Configuración, respaldo y monitoreo de servidores de almacenamiento, carpetas compartidas y Active Directory.
+                        </p>
+                    </div>
+                    <button class="open-modal-btn w-full mt-4 py-2.5 rounded-xl bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30 hover:bg-cyanAccent hover:text-darkBg font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                        data-title="Administración de Servidores"
+                        data-category="Servidores & Identidad"
+                        data-desc="Implementación y gestión de infraestructura de servidores locales y virtuales. Gestión de Active Directory, permisos de acceso a archivos corporativos, copias de seguridad automatizadas y políticas de seguridad."
+                        data-features="Configuración de Active Directory y Domain Controllers|Políticas de accesos y respaldos automáticos|Servidores NAS y almacenamiento centralizado|Monitoreo constante de salud del sistema">
+                        Ver Detalles <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+
+                <!-- Card 4: Correos Institucionales -->
+                <div class="service-card glass-card glass-card-hover rounded-2xl p-6 flex flex-col justify-between" data-category="servidores">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold">Servidores & Identidad</span>
+                            <i class="fa-solid fa-envelope-shield text-2xl text-cyanAccent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Correos Institucionales</h3>
+                        <p class="text-grayText text-sm mb-4 line-clamp-3">
+                            Creación, migración y gestión de cuentas de correo bajo tu dominio propio con plataformas como Google Workspace o Microsoft 365.
+                        </p>
+                    </div>
+                    <button class="open-modal-btn w-full mt-4 py-2.5 rounded-xl bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30 hover:bg-cyanAccent hover:text-darkBg font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                        data-title="Correos Institucionales Corporativos"
+                        data-category="Servidores & Identidad"
+                        data-desc="Brinda profesionalismo a tu marca proyectando correos con dominio propio (usuario@tuempresa.com). Configuramos registros SPF, DKIM, DMARC para evitar spam y garantizamos la integración móvil y de escritorio."
+                        data-features="Configuración de dominios y seguridad anti-spam|Integración en Microsoft 365 / Google Workspace|Migración transparente de buzones antiguos|Soporte en sincronización con smartphones">
+                        Ver Detalles <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+
+                <!-- Card 5: Desarrollo Web & Portales -->
+                <div class="service-card glass-card glass-card-hover rounded-2xl p-6 flex flex-col justify-between" data-category="web">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold">Servicios Web</span>
+                            <i class="fa-solid fa-globe text-2xl text-cyanAccent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Desarrollo Web & Portales</h3>
+                        <p class="text-grayText text-sm mb-4 line-clamp-3">
+                            Diseño de páginas web corporativas, sitios responsivos, portales interactivos y tiendas virtuales a medida.
+                        </p>
+                    </div>
+                    <button class="open-modal-btn w-full mt-4 py-2.5 rounded-xl bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30 hover:bg-cyanAccent hover:text-darkBg font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                        data-title="Desarrollo Web & Portales de Negocio"
+                        data-category="Servicios Web"
+                        data-desc="Desarrollamos la presencia digital de tu negocio adaptada a dispositivos móviles. Creamos sitios con rendimiento veloz, estándares SEO, formularios interactivos y diseño cibernético vanguardista."
+                        data-features="Diseño 100% responsivo y rápido|Integración de formularios y WhatsApp Directo|Mantenimiento de hosting y certificado SSL|Optimización SEO para motores de búsqueda">
+                        Ver Detalles <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+
+                <!-- Card 6: Redes y Cableado Estructurado -->
+                <div class="service-card glass-card glass-card-hover rounded-2xl p-6 flex flex-col justify-between" data-category="mantenimiento">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold">Infraestructura</span>
+                            <i class="fa-solid fa-network-wired text-2xl text-cyanAccent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Redes & Cableado Estructurado</h3>
+                        <p class="text-grayText text-sm mb-4 line-clamp-3">
+                            Instalación de puntos de red, ordenamiento de Racks, switches, puntos de acceso Wi-Fi corporativos y VLANs.
+                        </p>
+                    </div>
+                    <button class="open-modal-btn w-full mt-4 py-2.5 rounded-xl bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30 hover:bg-cyanAccent hover:text-darkBg font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                        data-title="Redes & Cableado Estructurado"
+                        data-category="Mantenimiento & Equipos"
+                        data-desc="Diseñamos e implementamos redes locales (LAN/WLAN) de alta velocidad. Organizamos el cableado en armarios de telecomunicaciones para facilitar la gestión y garantizar la máxima velocidad de transferencia."
+                        data-features="Peinado y etiquetado de Racks de telecomunicación|Despliegue de APs Wi-Fi de alta cobertura|Configuración de Switches y segmentación VLAN|Certificación y pruebas de velocidad en puntos de red">
+                        Ver Detalles <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SERVICE DETAIL MODAL -->
+        <div id="serviceModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div class="glass-card rounded-2xl max-w-xl w-full p-6 sm:p-8 relative border-cyanAccent/40 shadow-2xl animate-fade-in">
+                <!-- Close Button -->
+                <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 text-xl" aria-label="Cerrar modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <div class="mb-4">
+                    <span id="modalCategory" class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold uppercase">Categoría</span>
+                    <h3 id="modalTitle" class="text-2xl font-bold text-white mt-2">Título del Servicio</h3>
+                </div>
+
+                <p id="modalDescription" class="text-grayText text-sm sm:text-base leading-relaxed mb-6">
+                    Descripción detallada del servicio...
+                </p>
+
+                <div class="mb-6">
+                    <h4 class="text-white font-semibold text-sm mb-3">Características Incluidas:</h4>
+                    <ul id="modalFeatures" class="space-y-2 text-sm text-gray-300">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-cyanAccent/10">
+                    <button id="modalCloseAction" class="px-5 py-2.5 rounded-xl glass-card text-gray-300 hover:text-white text-sm font-medium">
+                        Cerrar
+                    </button>
+                    <a id="modalSolicitarBtn" href="#contacto" class="px-6 py-2.5 rounded-xl bg-cyanAccent text-darkBg font-bold text-sm cyan-glow hover:bg-cyanHover transition-all">
+                        Solicitar Este Servicio
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT SECTION -->
+        <section id="contacto" class="py-24 bg-darkBg/90 border-t border-cyanAccent/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    
+                    <!-- Contact Info Column -->
+                    <div class="lg:col-span-5 space-y-8">
+                        <div>
+                            <span class="text-cyanAccent text-xs font-bold uppercase tracking-widest">Contacto Directo</span>
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Hablemos de tu Proyecto IT</h2>
+                            <p class="text-grayText mt-4 text-sm sm:text-base">
+                                ¿Necesitas renovar la infraestructura de tu empresa o requieres soporte técnico confiable? Ponte en contacto con nuestro equipo.
+                            </p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="glass-card rounded-2xl p-4 flex items-center gap-4">
+                                <div class="h-12 w-12 rounded-xl bg-cyanAccent/10 text-cyanAccent flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-grayText">Correo Electrónico</p>
+                                    <p class="text-white font-semibold text-sm">contacto@5-itco.com</p>
+                                </div>
+                            </div>
+
+                            <div class="glass-card rounded-2xl p-4 flex items-center gap-4">
+                                <div class="h-12 w-12 rounded-xl bg-cyanAccent/10 text-cyanAccent flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-grayText">Atención Telefónica / WhatsApp</p>
+                                    <p class="text-white font-semibold text-sm">+52 (55) 1234-5678</p>
+                                </div>
+                            </div>
+
+                            <div class="glass-card rounded-2xl p-4 flex items-center gap-4">
+                                <div class="h-12 w-12 rounded-xl bg-cyanAccent/10 text-cyanAccent flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-clock"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-grayText">Horario de Atención</p>
+                                    <p class="text-white font-semibold text-sm">Lunes a Viernes: 8:00 AM - 6:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mini Glass Card with Logo -->
+                        <div class="glass-card rounded-2xl p-6 border-cyanAccent/30 flex items-center gap-4">
+                            <div class="logo-container h-14 w-14 shrink-0 bg-white">
+                                <img src="Logo02_2.jpg" alt="5-ITCO Small Logo" class="logo-img h-full w-full" onerror="this.src='https://placehold.co/100x100/081738/00F0FF?text=5-ITCO'">
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-sm">5-ITCO Consulting</h4>
+                                <p class="text-xs text-grayText">Tu socio tecnológico de confianza.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form Column -->
+                    <div class="lg:col-span-7">
+                        <div class="glass-card rounded-3xl p-6 sm:p-10 border-cyanAccent/30 relative">
+                            <h3 class="text-2xl font-bold text-white mb-6">Enviar un Mensaje</h3>
+                            
+                            <!-- Success Alert Message -->
+                            <div id="formAlert" class="hidden mb-6 p-4 rounded-xl bg-cyanAccent/20 border border-cyanAccent text-cyanAccent text-sm flex items-center gap-3">
+                                <i class="fa-solid fa-circle-check text-xl"></i>
+                                <div>
+                                    <strong class="block font-bold">¡Mensaje Enviado con Éxito!</strong>
+                                    <span>Un consultor tecnológico de 5-ITCO se pondrá en contacto en breve.</span>
+                                </div>
+                            </div>
+
+                            <form id="contactForm" class="space-y-5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-grayText uppercase tracking-wider mb-2">Nombre Completo *</label>
+                                        <input type="text" required placeholder="Ej. Carlos Mendoza" class="w-full px-4 py-3 rounded-xl bg-darkBg/80 border border-cyanAccent/20 text-white placeholder-gray-500 focus:outline-none focus:border-cyanAccent transition-colors text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-grayText uppercase tracking-wider mb-2">Correo Electrónico *</label>
+                                        <input type="email" required placeholder="carlos@empresa.com" class="w-full px-4 py-3 rounded-xl bg-darkBg/80 border border-cyanAccent/20 text-white placeholder-gray-500 focus:outline-none focus:border-cyanAccent transition-colors text-sm">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-grayText uppercase tracking-wider mb-2">Teléfono de Contacto</label>
+                                        <input type="tel" placeholder="+52 55..." class="w-full px-4 py-3 rounded-xl bg-darkBg/80 border border-cyanAccent/20 text-white placeholder-gray-500 focus:outline-none focus:border-cyanAccent transition-colors text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-grayText uppercase tracking-wider mb-2">Servicio de Interés</label>
+                                        <select id="contactServiceSelect" class="w-full px-4 py-3 rounded-xl bg-darkBg/80 border border-cyanAccent/20 text-white focus:outline-none focus:border-cyanAccent transition-colors text-sm">
+                                            <option value="Soporte Técnico" class="bg-darkCard text-white">Soporte Técnico & Help Desk</option>
+                                            <option value="Mantenimiento" class="bg-darkCard text-white">Mantenimiento de Equipos</option>
+                                            <option value="Servidores" class="bg-darkCard text-white">Servidores & Cuentas</option>
+                                            <option value="Servicios Web" class="bg-darkCard text-white">Desarrollo Web & Portales</option>
+                                            <option value="Otro" class="bg-darkCard text-white">Otra Consulta</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-grayText uppercase tracking-wider mb-2">Detalles del Mensaje *</label>
+                                    <textarea required rows="4" placeholder="Describe brevemente el requerimiento o los problemas técnicos que deseas resolver..." class="w-full px-4 py-3 rounded-xl bg-darkBg/80 border border-cyanAccent/20 text-white placeholder-gray-500 focus:outline-none focus:border-cyanAccent transition-colors text-sm resize-none"></textarea>
+                                </div>
+
+                                <button type="submit" class="w-full py-4 rounded-xl bg-cyanAccent text-darkBg font-bold text-base cyan-glow hover:bg-cyanHover transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    <span>Enviar Mensaje a 5-ITCO</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="glass-card border-t border-cyanAccent/20 py-10 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    
+                    <div class="flex items-center gap-4">
+                        <div class="logo-container h-10 w-10 bg-white rounded-lg">
+                            <img src="Logo02_2.jpg" alt="5-ITCO Footer Logo" class="logo-img h-full w-full" onerror="this.src='https://placehold.co/80x80/081738/00F0FF?text=5-ITCO'">
+                        </div>
+                        <div>
+                            <span class="text-xl font-bold text-white tracking-wider">5-ITCO</span>
+                            <p class="text-xs text-grayText">Integral Technology Consulting &copy; 2026. Todos los derechos reservados.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-6 text-grayText text-sm">
+                        <a href="#inicio" class="hover:text-cyanAccent transition-colors">Inicio</a>
+                        <a href="#filosofia" class="hover:text-cyanAccent transition-colors">Misión</a>
+                        <a href="#servicios" class="hover:text-cyanAccent transition-colors">Servicios</a>
+                        <a href="#contacto" class="hover:text-cyanAccent transition-colors">Contacto</a>
+                    </div>
+
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. Canvas Background Particle Effect ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particlesArray = [];
+        const numberOfParticles = 55;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.speedY = (Math.random() - 0.5) * 0.6;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 240, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function connectParticles() {
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let dx = particlesArray[a].x - particlesArray[b].x;
+                    let dy = particlesArray[a].y - particlesArray[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 110) {
+                        ctx.strokeStyle = `rgba(0, 240, 255, ${0.15 - distance/1000})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            connectParticles();
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.onload = function() {
+            initParticles();
+            animateParticles();
+        };
+
+        // --- 2. Mobile Menu Toggle ---
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // --- 3. Category Filter Logic ---
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const serviceCards = document.querySelectorAll('.service-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.getAttribute('data-category');
+
+                // Update active state styles
+                filterBtns.forEach(b => {
+                    b.classList.remove('active-filter', 'bg-cyanAccent', 'text-darkBg', 'cyan-glow');
+                    b.classList.add('inactive-filter', 'glass-card', 'text-gray-300');
+                });
+
+                btn.classList.remove('inactive-filter', 'glass-card', 'text-gray-300');
+                btn.classList.add('active-filter', 'bg-cyanAccent', 'text-darkBg', 'cyan-glow');
+
+                // Filter Cards Animation
+                serviceCards.forEach(card => {
+                    const cardCat = card.getAttribute('data-category');
+                    if (category === 'all' || cardCat === category) {
+                        card.style.display = 'flex';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 50);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 200);
+                    }
+                });
+            });
+        });
+
+        // Styling for active/inactive initial CSS
+        document.querySelectorAll('.active-filter').forEach(el => {
+            el.classList.add('bg-cyanAccent', 'text-darkBg', 'cyan-glow');
+        });
+        document.querySelectorAll('.inactive-filter').forEach(el => {
+            el.classList.add('glass-card', 'text-gray-300');
+        });
+
+        // --- 4. Service Details Modal Logic ---
+        const serviceModal = document.getElementById('serviceModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalCloseAction = document.getElementById('modalCloseAction');
+        const modalSolicitarBtn = document.getElementById('modalSolicitarBtn');
+        
+        const modalTitle = document.getElementById('modalTitle');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalDescription = document.getElementById('modalDescription');
+        const modalFeatures = document.getElementById('modalFeatures');
+
+        document.querySelectorAll('.open-modal-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const title = button.getAttribute('data-title');
+                const category = button.getAttribute('data-category');
+                const desc = button.getAttribute('data-desc');
+                const features = button.getAttribute('data-features').split('|');
+
+                modalTitle.textContent = title;
+                modalCategory.textContent = category;
+                modalDescription.textContent = desc;
+
+                // Features list rendering
+                modalFeatures.innerHTML = '';
+                features.forEach(feat => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center gap-2';
+                    li.innerHTML = `<i class="fa-solid fa-check text-cyanAccent text-xs"></i> <span>${feat}</span>`;
+                    modalFeatures.appendChild(li);
+                });
+
+                serviceModal.classList.remove('hidden');
+            });
+        });
+
+        function closeModal() {
+            serviceModal.classList.add('hidden');
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modalCloseAction.addEventListener('click', closeModal);
+        modalSolicitarBtn.addEventListener('click', closeModal);
+
+        serviceModal.addEventListener('click', (e) => {
+            if (e.target === serviceModal) closeModal();
+        });
+
+        // --- 5. Contact Form Handler ---
+        const contactForm = document.getElementById('contactForm');
+        const formAlert = document.getElementById('formAlert');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            formAlert.classList.remove('hidden');
+            contactForm.reset();
+
+            // Scroll smoothly to alert
+            formAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            setTimeout(() => {
+                formAlert.classList.add('hidden');
+            }, 6000);
+        });
+    </script>
+</body>
+</html>
